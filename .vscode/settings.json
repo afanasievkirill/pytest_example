@@ -3,6 +3,13 @@
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true,
       },
-      "python.linting.pylintArgs": ["--generate-members"]
+    "python.linting.pylintArgs": [
+        "--generate-members"
+    ],
+    "python.testing.pytestArgs": [
+        "."
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
       
 }
