@@ -23,3 +23,7 @@ $ pip install -r requirements.txt
 ```
 $ py.test test_add_group.py
 ```
+
+```
+$ py.test test_add_contact.py
+```

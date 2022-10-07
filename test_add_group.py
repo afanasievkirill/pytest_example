@@ -10,13 +10,13 @@ class TestAddGroup(unittest.TestCase):
         self.wd = webdriver.Firefox()
         self.wd.implicitly_wait(30)
 
-    def open_home_page(self, wd):
+    def open_home_page(self, wd: webdriver):
         wd.get("http://localhost/addressbook/group.php")
 
-    def open_groups_page(self, wd):
+    def open_groups_page(self, wd: webdriver):
         wd.find_element_by_link_text("groups").click()
 
-    def login(self, wd, username, password):
+    def login(self, wd: webdriver, username, password):
         wd.find_element_by_name("user").click()
         wd.find_element_by_name("user").clear()
         wd.find_element_by_name("user").send_keys(username)
@@ -25,10 +25,10 @@ class TestAddGroup(unittest.TestCase):
         wd.find_element_by_name("pass").send_keys(password)
         wd.find_element_by_xpath("//input[@value='Login']").click()
 
-    def logout(self, wd):
+    def logout(self, wd: webdriver):
         wd.find_element_by_link_text("Logout").click()
 
-    def create_group(self, wd, group):
+    def create_group(self, wd: webdriver, group: Group):
         wd.find_element_by_name("new").click()
 
         wd.find_element_by_name("group_name").click()
