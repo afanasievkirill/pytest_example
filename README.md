@@ -1,7 +1,7 @@
 # pytest_example
 
 <a id="markdown-описание" name="Предварительные настройки."></a>
-## Описание
+## Предварительные настройки.
 
 Подготовить виртуальное окружение Python.
 ```
@@ -18,7 +18,7 @@ $ pip install -r requirements.txt
 
 
 <a id="markdown-описание" name="Запуск тестов."></a>
-## Описание
+## Запуск тестов.
 
 ```
 $ py.test test_add_group.py

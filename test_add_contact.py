@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+import mimesis
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
+from mimesis import *
 import unittest
-
 
 from contact import Contact
 
@@ -11,6 +12,8 @@ class TestAddContact(unittest.TestCase):
     def setUp(self):
         self.wd = webdriver.Firefox()
         self.wd.implicitly_wait(30)
+        self.options = webdriver.FirefoxOptions()
+        self.options.headless = True
 
     def open_home_page(self, wd: webdriver):
         wd.get("http://localhost/addressbook/group.php")
@@ -71,31 +74,31 @@ class TestAddContact(unittest.TestCase):
         self.open_home_page(wd)
         self.login(wd, username="admin", password="secret")
         contact = Contact(
-            firstname="firstname",
-            lastname="lastname",
-            middlename="middlename",
-            nickname="nickname",
+            firstname=mimesis.Person().first_name(),
+            lastname=mimesis.Person().last_name(),
+            middlename=mimesis.Person().full_name(),
+            nickname=mimesis.Food().fruit(),
             photo_path=".\\README.md",
-            title="test_company",
-            company="company_name",
-            address="adress_1",
-            home_phone="+795-333-33-33",
-            mobile_phone="+7(495)-33-33-33",
-            work_phone="+7(495)-333-33-33",
-            fax="+7(495)-33-33-33",
-            email="test@test.com",
-            email_2="test@test.com",
-            email_3="test@test.com",
-            homepage="https://google.com",
+            title=mimesis.Text().title(),
+            company=mimesis.Text().title(),
+            address=mimesis.Address().address(),
+            home_phone=mimesis.Person().telephone(),
+            mobile_phone=mimesis.Person().telephone(),
+            work_phone=mimesis.Person().telephone(),
+            fax=mimesis.Person().telephone(),
+            email=mimesis.Person().email(),
+            email_2=mimesis.Person().email(),
+            email_3=mimesis.Person().email(),
+            homepage=mimesis.Internet().url(),
             bday_day="7",
             bday_month="June",
             bday_year="1990",
             aday="12",
             amonth="July",
             ayear="2010",
-            address_2="address_2",
-            home="home_2",
-            notes="notes",
+            address_2=mimesis.Address().address(),
+            home=mimesis.Address().address(),
+            notes=mimesis.Text().text(),
         )
         self.create_contact(wd, contact)
         self.goto_home_page(wd)
