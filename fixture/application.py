@@ -1,8 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
 
-from group import Group
-from contact import Contact
+from model.group import Group
+from model.contact import Contact
 
 
 class Application:
