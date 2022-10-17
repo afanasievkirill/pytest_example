@@ -14,7 +14,7 @@ def app(request):
 
 
 def test_add_contact(app):
-    app.login(username="admin", password="secret")
+    app.session.login(username="admin", password="secret")
     contact = Contact(
         firstname=mimesis.Person().first_name(),
         lastname=mimesis.Person().last_name(),
@@ -42,5 +42,5 @@ def test_add_contact(app):
         home=mimesis.Address().address(),
         notes=mimesis.Text().text(),
     )
-    app.create_contact(contact)
-    app.logout()
+    app.contact.create(contact)
+    app.session.logout()
