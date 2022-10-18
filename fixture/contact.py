@@ -6,9 +6,18 @@ class ContactHelper:
     def __init__(self, app):
         self.app = app
 
+    def go_to_contact_page(self):
+        wd = self.app.wd
+        wd.find_element_by_link_text("home").click()
+
     def create(self, contact: Contact):
         wd = self.app.wd
         wd.find_element_by_link_text("add new").click()
+        self.__fill_conctact_form(contact)
+        wd.find_element_by_link_text("home").click()
+
+    def __fill_conctact_form(self, contact: Contact):
+        wd = self.app.wd
         wd.find_element_by_name("firstname").send_keys(contact.firstname)
         wd.find_element_by_name("middlename").send_keys(contact.middlename)
         wd.find_element_by_name("lastname").send_keys(contact.lastname)
@@ -41,4 +50,3 @@ class ContactHelper:
         wd.find_element_by_name("phone2").send_keys(contact.home)
         wd.find_element_by_name("notes").send_keys(contact.notes)
         wd.find_element_by_xpath("(//input[@value='Enter'][2])").click()
-        wd.find_element_by_link_text("home").click()

@@ -5,6 +5,10 @@ class GroupHelper:
     def __init__(self, app):
         self.app = app
 
+    def go_to_group_page(self):
+        wd = self.app.wd
+        wd.find_element_by_link_text("groups").click()
+
     def create(self, group: Group):
         wd = self.app.wd
         wd.find_element_by_link_text("groups").click()
