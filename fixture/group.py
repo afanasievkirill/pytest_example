@@ -19,6 +19,8 @@ class GroupHelper:
 
     def edit(self, group: Group):
         wd = self.app.wd
+        self.go_to_group_page()
+        self.select_first()
         wd.find_element_by_name("edit").click()
         self.__fill_group_form(group)
         wd.find_element_by_name("update").click()
@@ -35,5 +37,7 @@ class GroupHelper:
 
     def delete(self):
         wd = self.app.wd
+        self.go_to_group_page()
+        self.select_first()
         wd.find_element_by_name("delete").click()
         self.go_to_group_page()

@@ -31,8 +31,11 @@ class ContactHelper:
 
     def delete(self):
         wd = self.app.wd
+        self.go_to_contact_page()
+        self.select_first()
         wd.find_element_by_xpath("//input[@value='Delete']").click()
         wd.switch_to.alert.accept()
+        self.go_to_contact_page()
 
     def __fill_conctact_form(self, contact: Contact):
         wd = self.app.wd

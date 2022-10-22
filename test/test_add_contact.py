@@ -5,7 +5,6 @@ from model.contact import Contact
 
 
 def test_add_contact(app):
-    app.session.login(username="admin", password="secret")
     contact = Contact(
         firstname=mimesis.Person().first_name(),
         lastname=mimesis.Person().last_name(),
@@ -34,4 +33,3 @@ def test_add_contact(app):
         notes=mimesis.Text().text(),
     )
     app.contact.create(contact)
-    app.session.logout()
