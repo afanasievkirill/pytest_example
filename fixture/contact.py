@@ -9,7 +9,11 @@ class ContactHelper:
 
     def go_to_contact_page(self):
         wd = self.app.wd
-        wd.find_element_by_link_text("home").click()
+        if not (
+            wd.current_url.endswith("/group.php")
+            and len(wd.find_elements_by_xpath("//input[@value='Delete']")) > 0
+        ):
+            wd.find_element_by_link_text("home").click()
 
     def create(self, contact: Contact):
         wd = self.app.wd
