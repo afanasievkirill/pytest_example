@@ -8,4 +8,7 @@ def test_modify_contact(app):
     if app.contact.count() == 0:
         create_contact = app.contact.get_data()
         app.contact.create(create_contact)
+    old_contact = app.contact.get_contact_list()
     app.contact.edit_first(modify_contact)
+    new_contact = app.contact.get_contact_list()
+    assert len(old_contact) == len(new_contact)

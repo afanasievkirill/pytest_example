@@ -26,6 +26,12 @@ $ pip install -r requirements.txt
 
 ## Запуск тестов.
 
+Все эллементы коллеции.
+
+```
+$ pytest
+```
+
 ```
 $ py.test test/test_add_group.py
 ```

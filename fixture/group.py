@@ -50,3 +50,19 @@ class GroupHelper:
         wd = self.app.wd
         self.go_to_group_page()
         return len(wd.find_elements_by_xpath("//input[@type='checkbox']"))
+
+    def get_group_list(self):
+        """
+            Функция пербирает записи на странице
+            http://localhost/addressbook/group.php и возвращает их список.
+        Returns:
+            group[]: лист объектов GROUP
+        """
+        wd = self.app.wd
+        self.go_to_group_page()
+        group_list = []
+        for element in wd.find_elements_by_css_selector("span.group"):
+            text = element.text
+            id = element.find_element_by_name("selected[]").get_attribute("value")
+            group_list.append(Group(name=text, id=id))
+        return group_list

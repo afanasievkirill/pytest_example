@@ -32,4 +32,7 @@ def test_add_contact(app):
         home=mimesis.Address().address(),
         notes=mimesis.Text().text(),
     )
+    old_contact = app.contact.get_contact_list()
     app.contact.create(contact)
+    new_contact = app.contact.get_contact_list()
+    assert len(old_contact) + 1 == len(new_contact)

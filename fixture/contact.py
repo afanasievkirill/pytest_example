@@ -100,6 +100,12 @@ class ContactHelper:
         wd.find_element_by_name("notes").send_keys(contact.notes)
 
     def get_data(self):
+        """
+            Функция создает объект с рандомными данными
+            для использования в тестах.
+        Returns:
+            Contact: Объект Contact ./model/contact.py
+        """
         contact = Contact(
             firstname=mimesis.Person().first_name(),
             lastname=mimesis.Person().last_name(),
@@ -128,3 +134,22 @@ class ContactHelper:
             notes=mimesis.Text().text(),
         )
         return contact
+
+    def get_contact_list(self):
+        """
+            Функция пербирает записи на странице
+            http://localhost/addressbook/index.php и возвращает их список.
+        Returns:
+            Contact[]: Лист объектов Contact ./model/contact.py
+        """
+        wd = self.app.wd
+        self.go_to_contact_page()
+        contact_list = []
+        for element in wd.find_elements_by_name("entry"):
+            id = element.find_element_by_css_selector("td input").get_attribute("value")
+            first_name = element.find_element_by_xpath("//td[2]").text
+            last_name = element.find_element_by_xpath("//td[3]").text
+            contact_list.append(
+                Contact(firstname=first_name, lastname=last_name, id=id)
+            )
+        return contact_list
