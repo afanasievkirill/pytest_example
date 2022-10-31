@@ -24,27 +24,33 @@ class ContactHelper:
         self.contact_cache = None
 
     def select_first(self):
+        self.select_by_index(0)
+
+    def select_by_index(self, index: int):
         wd = self.app.wd
-        wd.find_element_by_xpath("//tr//td/input[@type='checkbox'][1]").click()
+        wd.find_elements_by_xpath("//tr//td/input[@type='checkbox']")[index].click()
 
     def count(self):
         wd = self.app.wd
         self.go_to_contact_page()
         return len(wd.find_elements_by_xpath("//tr//td/input[@type='checkbox']"))
 
-    def edit_first(self, contact: Contact):
+    def edit_first(self, contact: Contact, index: int):
+        self.edit_by_index(contact, index)
+
+    def edit_by_index(self, contact: Contact, index: int):
         wd = self.app.wd
         self.go_to_contact_page()
-        wd.find_element_by_xpath("//img[@title='Edit'][1]").click()
+        wd.find_elements_by_xpath("//img[@title='Edit']")[index].click()
         self.__fill_conctact_form(contact)
         wd.find_element_by_xpath("(//input[@value='Update'][2])").click()
         wd.find_element_by_link_text("home").click()
         self.contact_cache = None
 
-    def delete(self):
+    def delete(self, index: int):
         wd = self.app.wd
         self.go_to_contact_page()
-        self.select_first()
+        self.select_by_index(index)
         wd.find_element_by_xpath("//input[@value='Delete']").click()
         wd.switch_to.alert.accept()
         self.go_to_contact_page()

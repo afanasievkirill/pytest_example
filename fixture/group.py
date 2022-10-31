@@ -22,10 +22,10 @@ class GroupHelper:
         self.go_to_group_page()
         self.group_cache = None
 
-    def edit(self, group: Group):
+    def edit(self, group: Group, index: int):
         wd = self.app.wd
         self.go_to_group_page()
-        self.select_first()
+        self.select_by_index(index)
         wd.find_element_by_name("edit").click()
         self.__fill_group_form(group)
         wd.find_element_by_name("update").click()
@@ -37,14 +37,20 @@ class GroupHelper:
         self.app.page.set_field_value_by_name("group_header", group.header)
         self.app.page.set_field_value_by_name("group_footer", group.footer)
 
-    def select_first(self):
+    def select_by_index(self, index):
         wd = self.app.wd
-        wd.find_element_by_xpath("//input[@type='checkbox'][1]").click()
+        wd.find_elements_by_xpath("//input[@type='checkbox']")[index].click()
 
-    def delete(self):
+    def select_first(self):
+        self.select_by_index(0)
+
+    def delete_first(self):
+        self.delete_group_by_index(0)
+
+    def delete_group_by_index(self, index):
         wd = self.app.wd
         self.go_to_group_page()
-        self.select_first()
+        self.select_by_index(index)
         wd.find_element_by_name("delete").click()
         self.go_to_group_page()
         self.group_cache = None
