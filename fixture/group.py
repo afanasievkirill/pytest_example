@@ -20,6 +20,7 @@ class GroupHelper:
         self.__fill_group_form(group)
         wd.find_element_by_name("submit").click()
         self.go_to_group_page()
+        self.group_cache = None
 
     def edit(self, group: Group):
         wd = self.app.wd
@@ -29,6 +30,7 @@ class GroupHelper:
         self.__fill_group_form(group)
         wd.find_element_by_name("update").click()
         self.go_to_group_page()
+        self.group_cache = None
 
     def __fill_group_form(self, group: Group):
         self.app.page.set_field_value_by_name("group_name", group.name)
@@ -45,24 +47,29 @@ class GroupHelper:
         self.select_first()
         wd.find_element_by_name("delete").click()
         self.go_to_group_page()
+        self.group_cache = None
 
     def count(self):
         wd = self.app.wd
         self.go_to_group_page()
         return len(wd.find_elements_by_xpath("//input[@type='checkbox']"))
 
+    group_cache = None
+
     def get_group_list(self):
         """
-            Функция пербирает записи на странице
+            Функция проверяет состояние кэша,
+            в случае его отсутсвия анализирует записи о группах на странице:
             http://localhost/addressbook/group.php и возвращает их список.
         Returns:
-            group[]: лист объектов GROUP
+            group_cache[]: лист объектов GROUP
         """
-        wd = self.app.wd
-        self.go_to_group_page()
-        group_list = []
-        for element in wd.find_elements_by_css_selector("span.group"):
-            text = element.text
-            id = element.find_element_by_name("selected[]").get_attribute("value")
-            group_list.append(Group(name=text, id=id))
-        return group_list
+        if self.group_cache is None:
+            wd = self.app.wd
+            self.go_to_group_page()
+            self.group_cache = []
+            for element in wd.find_elements_by_css_selector("span.group"):
+                text = element.text
+                id = element.find_element_by_name("selected[]").get_attribute("value")
+                self.group_cache.append(Group(name=text, id=id))
+        return list(self.group_cache)

@@ -21,6 +21,7 @@ class ContactHelper:
         self.__fill_conctact_form(contact)
         wd.find_element_by_xpath("(//input[@value='Enter'][2])").click()
         wd.find_element_by_link_text("home").click()
+        self.contact_cache = None
 
     def select_first(self):
         wd = self.app.wd
@@ -38,6 +39,7 @@ class ContactHelper:
         self.__fill_conctact_form(contact)
         wd.find_element_by_xpath("(//input[@value='Update'][2])").click()
         wd.find_element_by_link_text("home").click()
+        self.contact_cache = None
 
     def delete(self):
         wd = self.app.wd
@@ -46,6 +48,7 @@ class ContactHelper:
         wd.find_element_by_xpath("//input[@value='Delete']").click()
         wd.switch_to.alert.accept()
         self.go_to_contact_page()
+        self.contact_cache = None
 
     def __fill_conctact_form(self, contact: Contact):
         wd = self.app.wd
@@ -102,7 +105,7 @@ class ContactHelper:
     def get_data(self):
         """
             Функция создает объект с рандомными данными
-            для использования в тестах.
+            для использования в тестах с помощью библиотеки mimesis.
         Returns:
             Contact: Объект Contact ./model/contact.py
         """
@@ -135,21 +138,29 @@ class ContactHelper:
         )
         return contact
 
+    contact_cache = None
+
     def get_contact_list(self):
         """
-            Функция пербирает записи на странице
+            Функция проверяет кэш, в случае его отсутсвия
+            пербирает записи на странице:
             http://localhost/addressbook/index.php и возвращает их список.
         Returns:
             Contact[]: Лист объектов Contact ./model/contact.py
         """
-        wd = self.app.wd
-        self.go_to_contact_page()
-        contact_list = []
-        for element in wd.find_elements_by_name("entry"):
-            id = element.find_element_by_css_selector("td input").get_attribute("value")
-            list_td = []
-            list_td = element.find_elements_by_css_selector("td")
-            firstname = list_td[2].text
-            lastname = list_td[1].text
-            contact_list.append(Contact(firstname=firstname, lastname=lastname, id=id))
-        return contact_list
+        if self.contact_cache is None:
+            wd = self.app.wd
+            self.go_to_contact_page()
+            self.contact_cache = []
+            for element in wd.find_elements_by_name("entry"):
+                id = element.find_element_by_css_selector("td input").get_attribute(
+                    "value"
+                )
+                list_td = []
+                list_td = element.find_elements_by_css_selector("td")
+                firstname = list_td[2].text
+                lastname = list_td[1].text
+                self.contact_cache.append(
+                    Contact(firstname=firstname, lastname=lastname, id=id)
+                )
+        return self.contact_cache
