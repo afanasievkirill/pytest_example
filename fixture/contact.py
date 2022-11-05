@@ -1,5 +1,6 @@
 from model.contact import Contact
 import mimesis
+import re
 from selenium.webdriver.support.ui import Select
 
 
@@ -35,17 +36,61 @@ class ContactHelper:
         self.go_to_contact_page()
         return len(wd.find_elements_by_xpath("//tr//td/input[@type='checkbox']"))
 
-    def edit_first(self, contact: Contact, index: int):
+    def edit_first(self, contact: Contact, index: int = 0):
         self.edit_by_index(contact, index)
 
     def edit_by_index(self, contact: Contact, index: int):
+        """
+            Метод редактирует Контакт по индексу с помощью формы.
+        Args:
+            contact (Contact): Объект Contact ./model/contact.py
+            index (int): порядковый номер элемента в списке контактов
+            на странице: /addressbook/index.php
+        """
         wd = self.app.wd
-        self.go_to_contact_page()
-        wd.find_elements_by_xpath("//img[@title='Edit']")[index].click()
+        self.open_contact_by_index(index)
         self.__fill_conctact_form(contact)
         wd.find_element_by_xpath("(//input[@value='Update'][2])").click()
         wd.find_element_by_link_text("home").click()
         self.contact_cache = None
+
+    def get_contact_info_from_edit_page(self, index: int):
+        """_summary_
+
+        Args:
+            index (int): порядковый номер элемента в списке контактов
+            на странице: /addressbook/index.php
+        Returns:
+            Contact : Объект Contact ./model/contact.py
+        """
+        wd = self.app.wd
+        self.open_contact_by_index(index)
+        firstname = wd.find_element_by_name("firstname").get_attribute("value")
+        lastname = wd.find_element_by_name("lastname").get_attribute("value")
+        id = wd.find_element_by_name("id").get_attribute("value")
+        home_phone = wd.find_element_by_name("home").get_attribute("value")
+        mobile_phone = wd.find_element_by_name("mobile").get_attribute("value")
+        work_phone = wd.find_element_by_name("work").get_attribute("value")
+        home_phone_2 = wd.find_element_by_name("phone2").get_attribute("value")
+        return Contact(
+            firstname=firstname,
+            lastname=lastname,
+            id=id,
+            home_phone=home_phone,
+            mobile_phone=mobile_phone,
+            work_phone=work_phone,
+            home_phone_2=home_phone_2,
+        )
+
+    def open_contact_by_index(self, index: int):
+        wd = self.app.wd
+        self.go_to_contact_page()
+        wd.find_elements_by_xpath("//img[@title='Edit']")[index].click()
+
+    def open_contact_view_by_index(self, index: int):
+        wd = self.app.wd
+        self.go_to_contact_page()
+        wd.find_elements_by_xpath("//img[@title='Details']")[index].click()
 
     def delete(self, index: int):
         wd = self.app.wd
@@ -104,11 +149,11 @@ class ContactHelper:
         wd.find_element_by_name("address2").clear()
         wd.find_element_by_name("address2").send_keys(contact.address_2)
         wd.find_element_by_name("phone2").clear()
-        wd.find_element_by_name("phone2").send_keys(contact.home)
+        wd.find_element_by_name("phone2").send_keys(contact.home_phone_2)
         wd.find_element_by_name("notes").clear()
         wd.find_element_by_name("notes").send_keys(contact.notes)
 
-    def get_data(self):
+    def get_random_data(self) -> Contact:
         """
             Функция создает объект с рандомными данными
             для использования в тестах с помощью библиотеки mimesis.
@@ -139,8 +184,38 @@ class ContactHelper:
             amonth="July",
             ayear="2010",
             address_2=mimesis.Address().address(),
-            home=mimesis.Address().address(),
+            home_phone_2=mimesis.Person().telephone(),
             notes=mimesis.Text().text(),
+        )
+        return contact
+
+    def get_data(self) -> Contact:
+        contact = Contact(
+            firstname="firstname",
+            lastname="lastname",
+            middlename="middlename",
+            nickname="nickname",
+            photo_path="/README.md",
+            title="title",
+            company="company",
+            address="address",
+            home_phone="9153003030",
+            mobile_phone="9204004040",
+            work_phone="9255005050",
+            fax="9306006060",
+            email="email@email.com",
+            email_2="email@email.com",
+            email_3="email@email.com",
+            homepage="https://localhost",
+            bday_day="7",
+            bday_month="June",
+            bday_year="1990",
+            aday="12",
+            amonth="July",
+            ayear="2010",
+            address_2=mimesis.Address().address(),
+            home_phone_2="9357007070",
+            notes="notes",
         )
         return contact
 
@@ -149,8 +224,8 @@ class ContactHelper:
     def get_contact_list(self):
         """
             Функция проверяет кэш, в случае его отсутсвия
-            пербирает записи на странице:
-            http://localhost/addressbook/index.php и возвращает их список.
+            перебирает записи на странице:
+            addressbook/index.php и возвращает их список.
         Returns:
             Contact[]: Лист объектов Contact ./model/contact.py
         """
@@ -166,7 +241,44 @@ class ContactHelper:
                 list_td = element.find_elements_by_css_selector("td")
                 firstname = list_td[2].text
                 lastname = list_td[1].text
+                all_phones = list_td[5].text.splitlines()
                 self.contact_cache.append(
-                    Contact(firstname=firstname, lastname=lastname, id=id)
+                    Contact(
+                        firstname=firstname,
+                        lastname=lastname,
+                        id=id,
+                        home_phone=all_phones[0],
+                        mobile_phone=all_phones[1],
+                        work_phone=all_phones[2],
+                        home_phone_2=all_phones[3],
+                    )
                 )
-        return self.contact_cache
+        return list(self.contact_cache)
+
+    def get_contact_from_view_page(self, index):
+        wd = self.app.wd
+        self.open_contact_view_by_index(index)
+        text = wd.find_element_by_id("content").text
+        home_phone = re.search("H: (.*)", text).group(1)
+        work_phone = re.search("W: (.*)", text).group(1)
+        mobile_phone = re.search("M: (.*)", text).group(1)
+        home_phone_2 = re.search("P: (.*)", text).group(1)
+        return Contact(
+            home_phone=home_phone,
+            mobile_phone=mobile_phone,
+            work_phone=work_phone,
+            home_phone_2=home_phone_2,
+        )
+
+    def clear_phone(phone: str) -> str:
+        """
+            Метод приводит телефоны с формы addressbook/edit.php
+            к виду в списке с формы addressbook/index.php
+
+        Args:
+            phone (str): строка вида +7(920)-200-20-20
+
+        Returns:
+            str: строка вида +79202002020
+        """
+        return re.sub("[]() -.", "", phone)

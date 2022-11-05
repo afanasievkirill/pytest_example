@@ -28,7 +28,7 @@ class Contact:
         amonth=None,
         ayear=None,
         address_2=None,
-        home=None,
+        home_phone_2=None,
         notes=None,
         id=None,
     ):
@@ -55,7 +55,7 @@ class Contact:
         self.amonth = amonth
         self.ayear = ayear
         self.address_2 = address_2
-        self.home = home
+        self.home_phone_2 = home_phone_2
         self.notes = notes
         self.id = id
 
