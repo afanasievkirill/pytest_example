@@ -8,7 +8,8 @@ class ContactHelper:
     def __init__(self, app):
         self.app = app
 
-    def go_to_contact_page(self):
+    def go_to_contact_page(self) -> None:
+        """_summary_"""
         wd = self.app.wd
         if not (
             wd.current_url.endswith("/group.php")
@@ -55,8 +56,10 @@ class ContactHelper:
         self.contact_cache = None
 
     def get_contact_info_from_edit_page(self, index: int):
-        """_summary_
-
+        """
+            Метод возвращает данные о Контакте с страницы:
+            addressbook/edit.php?id=${index}
+            по айди.
         Args:
             index (int): порядковый номер элемента в списке контактов
             на странице: /addressbook/index.php
@@ -67,19 +70,29 @@ class ContactHelper:
         self.open_contact_by_index(index)
         firstname = wd.find_element_by_name("firstname").get_attribute("value")
         lastname = wd.find_element_by_name("lastname").get_attribute("value")
+        address = wd.find_element_by_name("address").text
         id = wd.find_element_by_name("id").get_attribute("value")
+
         home_phone = wd.find_element_by_name("home").get_attribute("value")
         mobile_phone = wd.find_element_by_name("mobile").get_attribute("value")
         work_phone = wd.find_element_by_name("work").get_attribute("value")
         home_phone_2 = wd.find_element_by_name("phone2").get_attribute("value")
+
+        email = wd.find_element_by_name("email").get_attribute("value")
+        email_2 = wd.find_element_by_name("email2").get_attribute("value")
+        email_3 = wd.find_element_by_name("email3").get_attribute("value")
         return Contact(
             firstname=firstname,
             lastname=lastname,
             id=id,
+            address=address,
             home_phone=home_phone,
             mobile_phone=mobile_phone,
             work_phone=work_phone,
             home_phone_2=home_phone_2,
+            email=email,
+            email_2=email_2,
+            email_3=email_3,
         )
 
     def open_contact_by_index(self, index: int):
@@ -241,21 +254,30 @@ class ContactHelper:
                 list_td = element.find_elements_by_css_selector("td")
                 firstname = list_td[2].text
                 lastname = list_td[1].text
-                all_phones = list_td[5].text.splitlines()
+                address = list_td[3].text
+                all_emails = list_td[4].text
+                all_phones = list_td[5].text
                 self.contact_cache.append(
                     Contact(
                         firstname=firstname,
                         lastname=lastname,
                         id=id,
-                        home_phone=all_phones[0],
-                        mobile_phone=all_phones[1],
-                        work_phone=all_phones[2],
-                        home_phone_2=all_phones[3],
+                        address=address,
+                        all_phones_from_home_page=all_phones,
+                        all_emails_from_home_page=all_emails,
                     )
                 )
         return list(self.contact_cache)
 
-    def get_contact_from_view_page(self, index):
+    def get_contact_from_view_page(self, index) -> Contact:
+        """_summary_
+
+        Args:
+            index (_type_): _description_
+
+        Returns:
+            Contact: _description_
+        """
         wd = self.app.wd
         self.open_contact_view_by_index(index)
         text = wd.find_element_by_id("content").text
@@ -270,10 +292,10 @@ class ContactHelper:
             home_phone_2=home_phone_2,
         )
 
-    def clear_phone(phone: str) -> str:
+    def clear_phone(self, phone: str) -> str:
         """
             Метод приводит телефоны с формы addressbook/edit.php
-            к виду в списке с формы addressbook/index.php
+            к виду в списка формы addressbook/index.php
 
         Args:
             phone (str): строка вида +7(920)-200-20-20
@@ -281,4 +303,74 @@ class ContactHelper:
         Returns:
             str: строка вида +79202002020
         """
-        return re.sub("[]() -.", "", phone)
+        return re.sub("[() -.]", "", phone)
+
+    def clear_email(self, email: str) -> str:
+        """
+            Метод приводит телефоны с формы addressbook/edit.php
+            к виду в списка формы addressbook/index.php
+
+        Args:
+            phone (str): строка вида test@test.ru  /te st@test.ru
+
+        Returns:
+            str: строка вида test@test.ru
+        """
+        return re.sub(" ", "", email)
+
+    def merge_all_phones_like_home_page(self, contact: Contact) -> str:
+        """
+            Метод возвращает строку телефонов в представлении списка
+            с страницы: addressbook/index.php
+        Args:
+            contact (Contact): объект Contact ./model/contact.py
+
+        Returns:
+            str: строка all_phones_from_home_page
+            объекта Contact ./model/contact.py
+        """
+        return "\n".join(
+            filter(
+                lambda x: x != "",
+                map(
+                    lambda x: self.clear_phone(x),
+                    filter(
+                        lambda x: x is not None,
+                        [
+                            contact.home_phone,
+                            contact.mobile_phone,
+                            contact.work_phone,
+                            contact.home_phone_2,
+                        ],
+                    ),
+                ),
+            )
+        )
+
+    def merge_all_emails_like_home_page(self, contact: Contact) -> str:
+        """
+            Метод возвращает строку емейлов в представлении списка
+            с страницы: addressbook/index.php
+        Args:
+            contact (Contact): объект Contact ./model/contact.py
+
+        Returns:
+            str: строка all_phones_from_home_page
+            объекта Contact ./model/contact.py
+        """
+        return "\n".join(
+            filter(
+                lambda x: x != "",
+                map(
+                    lambda x: self.clear_email(x),
+                    filter(
+                        lambda x: x is not None,
+                        [
+                            contact.email,
+                            contact.email_2,
+                            contact.email_3,
+                        ],
+                    ),
+                ),
+            )
+        )
