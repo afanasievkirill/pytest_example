@@ -6,7 +6,7 @@ from utils.data_generator import DataGenerator
 
 data = DataGenerator()
 
-ddt = [data.get_random_data() for i in range(2)]
+ddt = [data.get_random_data() for i in range(5)]
 
 
 @mark.parametrize("contact", ddt, ids=[repr(x) for x in ddt])

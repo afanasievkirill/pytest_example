@@ -26,16 +26,9 @@ $ pip install -r requirements.txt
 
 ## Запуск тестов.
 
-Все эллементы коллеции.
+Все эллементы коллекции.
 
 ```
-$ pytest
+$ py.test --browser ${browser: default = chrome} --base_url ${base_url: default = http://localhost/addressbook/} --password ${password} test/* 
 ```
 
-```
-$ py.test test/test_add_group.py
-```
-
-```
-$ py.test test/test_add_contact.py
-```
