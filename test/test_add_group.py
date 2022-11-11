@@ -2,16 +2,7 @@
 from pytest import mark
 
 from model.group import Group
-from utils.data_generator import DataGenerator
-
-data = DataGenerator()
-
-ddt = [
-    Group(name=name, header=header, footer=footer)
-    for name in ("", data.get_random_string("name", 10))
-    for header in ("", data.get_random_string("header", 30))
-    for footer in ("", data.get_random_string("footer", 20))
-]
+from utils.add_group import ddt
 
 
 @mark.parametrize("group", ddt, ids=[repr(x) for x in ddt])

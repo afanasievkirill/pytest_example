@@ -2,11 +2,7 @@
 from pytest import mark
 
 from model.contact import Contact
-from utils.data_generator import DataGenerator
-
-data = DataGenerator()
-
-ddt = [data.get_random_data() for i in range(5)]
+from utils.add_contact import ddt
 
 
 @mark.parametrize("contact", ddt, ids=[repr(x) for x in ddt])
