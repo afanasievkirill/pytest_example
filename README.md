@@ -29,6 +29,6 @@ $ pip install -r requirements.txt
 Все эллементы коллекции.
 
 ```
-$ py.test --browser ${browser: default = chrome} --base_url ${base_url: default = http://localhost/addressbook/} --password ${password} test/* 
+$ py.test --browser ${browser: default = chrome} test/* 
 ```
 
