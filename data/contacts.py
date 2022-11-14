@@ -39,4 +39,4 @@ def get_random_data() -> Contact:
     )
 
 
-ddt = [get_random_data() for i in range(5)]
+ddt = [get_random_data() for i in range(1)]
